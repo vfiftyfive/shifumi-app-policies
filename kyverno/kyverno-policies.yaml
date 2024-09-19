@@ -1,0 +1,27 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-clientintent-calls
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+    - name: validate-call-namespaces
+      match:
+        resources:
+          kinds:
+            - ClientIntents
+      validate:
+        message: "Calls are only allowed to default, kafka, or the current namespace."
+        foreach:
+          - list: request.object.spec.calls
+            deny:
+              conditions:
+                all:
+                  - key: "{{ element.name }}"
+                    operator: AnyNotIn
+                    value:
+                      - "{{ regex_match('^[^.]+$', element.name) }}"
+                      - "{{ regex_match('^[^.]+\\.default$', element.name) }}"
+                      - "{{ regex_match('^[^.]+\\.kafka$', element.name) }}"
+                      - "{{ regex_match('^[^.]+\\.{{ request.object.metadata.namespace }}$', element.name) }}"
