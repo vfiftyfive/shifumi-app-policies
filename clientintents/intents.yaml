@@ -13,17 +13,6 @@ spec:
 apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
-  name: logger
-  namespace: shifumi
-spec:
-  service:
-    name: logger
-  calls:
-    - name: shifumi-server
----
-apiVersion: k8s.otterize.com/v1alpha3
-kind: ClientIntents
-metadata:
   name: shifumi-client
   namespace: shifumi
 spec:
