@@ -13,6 +13,17 @@ spec:
 apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
+  name: shifumi-client
+  namespace: shifumi
+spec:
+  service:
+    name: shifumi-client
+  calls:
+    - name: shifumi-kafka.kafka
+---
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
   name: shifumi-kafka
   namespace: kafka
 spec:
