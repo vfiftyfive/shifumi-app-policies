@@ -1,27 +1,25 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restrict-clientintent-calls
+  name: deny-calls-to-prod
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   background: true
   rules:
-    - name: validate-call-namespaces
+    - name: deny-prod-namespace-calls
       match:
-        resources:
-          kinds:
-            - ClientIntents
+        any:
+          - resources:
+              kinds:
+                - ClientIntents
       validate:
-        message: "Calls are only allowed to default, kafka, or the current namespace."
+        message: "Calls to services in the 'prod' namespace are not allowed."
         foreach:
-          - list: request.object.spec.calls
+          - list: "request.object.spec.calls"
             deny:
               conditions:
-                all:
-                  - key: "{{ element.name }}"
-                    operator: AnyNotIn
-                    value:
-                      - "{{ regex_match('^[^.]+$', element.name) }}"
-                      - "{{ regex_match('^[^.]+\\.default$', element.name) }}"
-                      - "{{ regex_match('^[^.]+\\.kafka$', element.name) }}"
-                      - "{{ regex_match('^[^.]+\\.{{ request.object.metadata.namespace }}$', element.name) }}"
+                any:
+                  # Deny services that end with .prod (prod namespace)
+                  - key: "{{ regex_match('.*\\.prod$', element.name) }}"
+                    operator: Equals
+                    value: true
