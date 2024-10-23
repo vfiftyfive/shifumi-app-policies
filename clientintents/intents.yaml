@@ -30,7 +30,7 @@ spec:
   service:
     name: shifumi-client
   calls:
-    - name: shifumi-kafka.kafka
+    - name: shifumi-kafka.prod
 ---
 apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
